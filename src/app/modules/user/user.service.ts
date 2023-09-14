@@ -1,7 +1,12 @@
 import config from "../../../config";
 import ApiError from "../../../errors/ApiError";
 import sendEmail from "../../../utils/sendMail";
-import { IActivationToken, IRegistration, IUser } from "./user.interface";
+import {
+  IActivationRequest,
+  IActivationToken,
+  IRegistration,
+  IUser,
+} from "./user.interface";
 import User from "./user.model";
 import ejs from "ejs";
 import jwt, { Secret } from "jsonwebtoken";
@@ -58,7 +63,30 @@ const createActivationToken = (user: IRegistration): IActivationToken => {
   return { token, activationCode };
 };
 
+const activateUser = async (payload: IActivationRequest) => {
+  const { activation_code, activation_token } = payload;
+  const newUser: { user: IUser; activationCode: string } = jwt.verify(
+    activation_token,
+    config.activation_secret as string
+  ) as { user: IUser; activationCode: string };
+  if (newUser.activationCode !== activation_code) {
+    throw new ApiError(400, "Activation code is not valid");
+  }
+  const { name, email, password } = newUser.user;
+  const existUser = await User.findOne({ email });
+  if (existUser) {
+    throw new ApiError(400, "Email is already exist");
+  }
+  const user = await User.create({
+    name,
+    email,
+    password,
+  });
+  return user;
+};
+
 export const UserService = {
   registrationUser,
   createActivationToken,
+  activateUser,
 };

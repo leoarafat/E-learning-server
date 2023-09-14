@@ -16,6 +16,10 @@ export default {
   cloud_api_secret: process.env.CLOUD_API_SECRET,
   redis_expires_in: process.env.REDIS_TOKEN_EXPIRES_IN,
   activation_secret: process.env.ACTIVATION_SECRET,
+  jwt: {
+    access_token: process.env.ACCESS_TOKEN,
+    refresh_token: process.env.REFRESH_TOKEN,
+  },
   smtp: {
     smtp_host: process.env.SMTP_HOST,
     smtp_port: process.env.SMTP_PORT,
