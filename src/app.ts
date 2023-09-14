@@ -4,12 +4,12 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import { NotFoundHandler } from "./errors/NotFoundHandler ";
-require("dotenv").config();
+import config from "./config";
 export const app: Application = express();
 //cors
 app.use(
   cors({
-    origin: process.env.ORIGIN,
+    origin: config.origin_url,
   })
 );
 //cookie
