@@ -1,6 +1,6 @@
 import express, { Application } from "express";
 import cors from "cors";
-
+import routes from "./app/routes";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import { NotFoundHandler } from "./errors/NotFoundHandler ";
@@ -20,7 +20,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 //All Routes
-// app.use('/api/v1', routes);
+app.use("/api/v1", routes);
 
 // Global Error Handler
 app.use(globalErrorHandler);

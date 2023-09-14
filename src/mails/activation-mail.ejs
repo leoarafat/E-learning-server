@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Welcome to E-learning</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #777;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <p>Hello, <%= user.name %></p>
+        <p>Thank you for register E-learning.</p>
+        <h1>
+            <%= activationCode %>
+        </h1>
+        <p>You can customize it further to meet your specific requirements.</p>
+        <p>Click the button below to take action:</p>
+        <a class="button" href="#">Click Me</a>
+        <p>If you have any questions, please contact us at <a href="mailto:your.email@example.com">your.email@example.com</a>.</p>
+    </div>
+</body>
+</html>

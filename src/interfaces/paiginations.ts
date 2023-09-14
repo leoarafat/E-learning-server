@@ -1,8 +1,9 @@
+import { SortOrder } from "mongoose";
 export type IPaginationOptions = {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 };
 export type IGenericResponse<T> = {
   meta: {
@@ -12,10 +13,6 @@ export type IGenericResponse<T> = {
   };
   data: T;
 };
-export type IAcademicSemesterFilters = {
-  searchTerm?: string;
-};
-import { SortOrder } from 'mongoose';
 
 export type IOptions = {
   page?: number;
