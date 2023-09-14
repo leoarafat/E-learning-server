@@ -1,7 +1,11 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import config from "../../../config";
 import ApiError from "../../../errors/ApiError";
-import { sendToken } from "../../../utils/jwt";
+import {
+  accessTokenOptions,
+  refreshTokenOptions,
+  sendToken,
+} from "../../../utils/jwt";
 import sendEmail from "../../../utils/sendMail";
 import {
   IActivationRequest,
@@ -12,8 +16,9 @@ import {
 } from "./user.interface";
 import User from "./user.model";
 import ejs from "ejs";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import path from "path";
+import { redis } from "../../../utils/redis";
 const registrationUser = async (payload: IRegistration) => {
   const { name, email, password } = payload;
   const user = {
@@ -105,9 +110,69 @@ const loginUser = async (payload: IUserLogin, res: Response) => {
   sendToken(user, 200, res);
 };
 
+//Logout user
+const logoutUser = async (req: Request, res: Response) => {
+  res.cookie("access_token", "", { maxAge: 1 });
+  res.cookie("refresh_token", "", { maxAge: 1 });
+  const userId = req.user?._id || null;
+  redis.del(userId);
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
+};
+
+const updateAccessToken = async (req: Request, res: Response) => {
+  const refresh_token = req.cookies.refresh_token as string;
+  const decoded = jwt.verify(
+    refresh_token,
+    config.jwt.refresh_token as string
+  ) as JwtPayload;
+  const message = "Could not refresh token";
+
+  if (!decoded) {
+    throw new ApiError(400, message);
+  }
+  const session = await redis.get(decoded.id as string);
+  if (!session) {
+    throw new ApiError(400, message);
+  }
+  const user = JSON.parse(session);
+  const accessToken = jwt.sign(
+    { id: user._id },
+    config.jwt.access_token as string,
+    {
+      expiresIn: "5m",
+    }
+  );
+  const refreshToken = jwt.sign(
+    { id: user._id },
+    config.jwt.refresh_token as string,
+    {
+      expiresIn: "3d",
+    }
+  );
+  res.cookie("access_token", accessToken, accessTokenOptions);
+  res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+  res.status(200).json({
+    status: "success",
+    accessToken,
+  });
+};
+
+//Get user
+const getUserById = async (req: Request, res: Response) => {
+  const userId = req.user?._id;
+  const result = await User.findById(userId);
+  return result;
+};
+
 export const UserService = {
   registrationUser,
   createActivationToken,
   activateUser,
   loginUser,
+  logoutUser,
+  updateAccessToken,
+  getUserById,
 };

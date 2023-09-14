@@ -29,16 +29,34 @@ const activateUser: RequestHandler = catchAsync(
 const loginUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     await UserService.loginUser(req.body, res);
-
-    // sendResponse(res, {
-    //   statusCode: 200,
-    //   success: true,
-    //   message: "User loggedin successful",
-    // });
+  }
+);
+const logoutUser: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    await UserService.logoutUser(req, res);
+  }
+);
+const updateAccessToken: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    await UserService.updateAccessToken(req, res);
+  }
+);
+const getUserById: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await UserService.getUserById(req, res);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "User retrieved by id successful",
+      data: result,
+    });
   }
 );
 export const UserController = {
   registrationUser,
   activateUser,
   loginUser,
+  logoutUser,
+  updateAccessToken,
+  getUserById,
 };
