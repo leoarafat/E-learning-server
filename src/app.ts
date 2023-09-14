@@ -1,9 +1,9 @@
 import express, { Application } from "express";
 import cors from "cors";
-// import globalErrorHandler from './app/middlewares/globalErrorHandler';
-// import routes from './app/routes';
-// import { NotFoundHandler } from './errors/NotFoundHandler ';
+
 import cookieParser from "cookie-parser";
+import globalErrorHandler from "./app/middlewares/globalErrorHandler";
+import { NotFoundHandler } from "./errors/NotFoundHandler ";
 require("dotenv").config();
 export const app: Application = express();
 //cors
@@ -22,8 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 //All Routes
 // app.use('/api/v1', routes);
 
-//Global Error Handler
-// app.use(globalErrorHandler);
+// Global Error Handler
+app.use(globalErrorHandler);
 
-//handle not found
-// app.use(NotFoundHandler.handle);
+// handle not found
+app.use(NotFoundHandler.handle);
