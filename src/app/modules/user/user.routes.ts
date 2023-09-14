@@ -4,5 +4,6 @@ const router = express.Router();
 
 router.post("/registration", UserController.registrationUser);
 router.post("/activate-user", UserController.activateUser);
+router.post("/login", UserController.loginUser);
 
 export const UserRoutes = router;

@@ -12,6 +12,8 @@ export interface IUser extends Document {
   isVerified: boolean;
   courses: Array<{ courseId: string }>;
   comparePassword: (password: string) => Promise<boolean>;
+  SignAccessToken: () => string;
+  SignRefreshToken: () => string;
 }
 
 export interface IRegistration {
@@ -36,4 +38,17 @@ export interface IEmailOptions {
 export interface IActivationRequest {
   activation_token: string;
   activation_code: string;
+}
+
+export interface IUserLogin {
+  email: string;
+  password: string;
+}
+
+export interface ITokenOptions {
+  expires: Date;
+  maxAge: number;
+  httpOnly: boolean;
+  sameSite: "lax" | "strict" | "none" | undefined;
+  secure?: boolean;
 }

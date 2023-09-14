@@ -19,6 +19,8 @@ export default {
   jwt: {
     access_token: process.env.ACCESS_TOKEN,
     refresh_token: process.env.REFRESH_TOKEN,
+    access_token_expires: process.env.ACCESS_TOKEN_EXPIRES,
+    refresh_token_expires: process.env.REFRESH_TOKEN_EXPIRES,
   },
   smtp: {
     smtp_host: process.env.SMTP_HOST,

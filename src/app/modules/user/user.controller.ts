@@ -17,7 +17,7 @@ const registrationUser: RequestHandler = catchAsync(
 );
 const activateUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await UserService.activateUser(req.body);
+    await UserService.activateUser(req.body);
 
     sendResponse(res, {
       statusCode: 201,
@@ -26,8 +26,19 @@ const activateUser: RequestHandler = catchAsync(
     });
   }
 );
+const loginUser: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    await UserService.loginUser(req.body, res);
 
+    // sendResponse(res, {
+    //   statusCode: 200,
+    //   success: true,
+    //   message: "User loggedin successful",
+    // });
+  }
+);
 export const UserController = {
   registrationUser,
   activateUser,
+  loginUser,
 };

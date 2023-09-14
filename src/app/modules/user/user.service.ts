@@ -1,11 +1,14 @@
+import { Response } from "express";
 import config from "../../../config";
 import ApiError from "../../../errors/ApiError";
+import { sendToken } from "../../../utils/jwt";
 import sendEmail from "../../../utils/sendMail";
 import {
   IActivationRequest,
   IActivationToken,
   IRegistration,
   IUser,
+  IUserLogin,
 } from "./user.interface";
 import User from "./user.model";
 import ejs from "ejs";
@@ -85,8 +88,26 @@ const activateUser = async (payload: IActivationRequest) => {
   return user;
 };
 
+//Login User
+const loginUser = async (payload: IUserLogin, res: Response) => {
+  const { email, password } = payload;
+  if (!email || !password) {
+    throw new ApiError(400, "Please enter your email and password");
+  }
+  const user = await User.findOne({ email }).select("+password");
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  const isPasswordMatch = await user.comparePassword(password);
+  if (!isPasswordMatch) {
+    throw new ApiError(400, "Invalid email or password");
+  }
+  sendToken(user, 200, res);
+};
+
 export const UserService = {
   registrationUser,
   createActivationToken,
   activateUser,
+  loginUser,
 };
