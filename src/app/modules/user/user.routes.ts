@@ -18,6 +18,11 @@ router.put(
   isAuthenticated(),
   UserController.updateUserPassword
 );
+router.put(
+  "/update-user-avatar",
+  isAuthenticated(),
+  UserController.updateProfilePicture
+);
 router.get(
   "/logout",
   isAuthenticated(),

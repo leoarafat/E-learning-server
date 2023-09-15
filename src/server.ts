@@ -1,7 +1,16 @@
 import { Server } from "http";
 import mongoose from "mongoose";
 import { app } from "./app";
+import { v2 as cloudinary } from "cloudinary";
+import config from "./config";
 require("dotenv").config();
+
+cloudinary.config({
+  cloud_name: config.cloud_name,
+  api_key: config.cloud_api_key,
+  api_secret: config.cloud_api_secret,
+});
+
 process.on("uncaughtException", (error) => {
   console.log(error);
   process.exit(1);
