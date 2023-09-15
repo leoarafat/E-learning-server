@@ -46,10 +46,6 @@ const userSchema = new Schema<IUser>(
         courseId: String,
       },
     ],
-    // comparePassword: {
-    //   type: String,
-    //   required: [true, 'Email is required'],
-    // },
   },
   {
     timestamps: true,
