@@ -52,6 +52,26 @@ const getUserById: RequestHandler = catchAsync(
     });
   }
 );
+const socialAuth: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    await UserService.socialAuth(req, res);
+  }
+);
+const updateUserInfo: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    await UserService.updateUserInfo(req, res);
+  }
+);
+const updateUserPassword: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    await UserService.updateUserPassword(req, res);
+  }
+);
+const updateProfilePicture: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    await UserService.updateProfilePicture(req, res);
+  }
+);
 export const UserController = {
   registrationUser,
   activateUser,
@@ -59,4 +79,8 @@ export const UserController = {
   logoutUser,
   updateAccessToken,
   getUserById,
+  socialAuth,
+  updateUserInfo,
+  updateUserPassword,
+  updateProfilePicture,
 };

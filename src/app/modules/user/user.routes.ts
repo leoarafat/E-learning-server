@@ -7,6 +7,17 @@ const router = express.Router();
 router.post("/registration", UserController.registrationUser);
 router.post("/activate-user", UserController.activateUser);
 router.post("/login", UserController.loginUser);
+router.post("/social-auth", UserController.socialAuth);
+router.put(
+  "/update-user-info",
+  isAuthenticated(),
+  UserController.updateUserInfo
+);
+router.put(
+  "/update-user-password",
+  isAuthenticated(),
+  UserController.updateUserPassword
+);
 router.get(
   "/logout",
   isAuthenticated(),

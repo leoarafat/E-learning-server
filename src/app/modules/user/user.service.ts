@@ -10,7 +10,11 @@ import sendEmail from "../../../utils/sendMail";
 import {
   IActivationRequest,
   IActivationToken,
+  IProfilePicture,
   IRegistration,
+  ISocialAuth,
+  IUpdateUserInfo,
+  IUpdateUserPassword,
   IUser,
   IUserLogin,
 } from "./user.interface";
@@ -19,6 +23,7 @@ import ejs from "ejs";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import path from "path";
 import { redis } from "../../../utils/redis";
+import cloudinary from "cloudinary";
 const registrationUser = async (payload: IRegistration) => {
   const { name, email, password } = payload;
   const user = {
@@ -152,6 +157,7 @@ const updateAccessToken = async (req: Request, res: Response) => {
       expiresIn: "3d",
     }
   );
+  req.user = user;
   res.cookie("access_token", accessToken, accessTokenOptions);
   res.cookie("refresh_token", refreshToken, refreshTokenOptions);
   res.status(200).json({
@@ -163,10 +169,107 @@ const updateAccessToken = async (req: Request, res: Response) => {
 //Get user
 const getUserById = async (req: Request, res: Response) => {
   const userId = req.user?._id;
-  const result = await User.findById(userId);
-  return result;
+  const result = await redis.get(userId);
+  if (result) {
+    const user = JSON.parse(result);
+    return user;
+  }
 };
 
+const socialAuth = async (req: Request, res: Response) => {
+  const { name, email, avatar } = req.body as ISocialAuth;
+  const user = await User.findOne({ email });
+  if (!user) {
+    const newUser = await User.create({
+      email,
+      name,
+      avatar,
+    });
+    sendToken(newUser, 200, res);
+  } else {
+    sendToken(user, 200, res);
+  }
+};
+
+const updateUserInfo = async (req: Request, res: Response) => {
+  const { name, email } = req.body as IUpdateUserInfo;
+  const userId = req.user?._id;
+  const user = await User.findById(userId);
+  if (email && user) {
+    const isEmailExist = await User.findOne({ email });
+    if (isEmailExist) {
+      throw new ApiError(404, "Email already exist");
+    }
+    user.email = email;
+  }
+  if (name && user) {
+    user.name = name;
+  }
+  await user?.save();
+  await redis.set(userId, JSON.stringify(user));
+  res.status(200).json({
+    success: true,
+    user,
+  });
+};
+const updateUserPassword = async (req: Request, res: Response) => {
+  const { oldPassword, newPassword } = req.body as IUpdateUserPassword;
+  if (!oldPassword || !newPassword) {
+    throw new ApiError(400, "Please enter your old and new password");
+  }
+  const userId = req.user?._id;
+  const user = await User.findById(userId).select("+password");
+
+  if (!user || user.password === undefined) {
+    throw new ApiError(400, "Invalid user");
+  }
+  const isPasswordMatch = await user?.comparePassword(oldPassword || "");
+  if (!isPasswordMatch) {
+    throw new ApiError(400, "Invalid old password");
+  }
+  user.password = newPassword;
+  await user.save();
+  await redis.set(userId, JSON.stringify(user));
+  res.status(201).json({
+    success: true,
+    user,
+  });
+};
+const updateProfilePicture = async (req: Request, res: Response) => {
+  const { avatar } = req.body as IProfilePicture;
+
+  const userId = req?.user?._id;
+  const user = await User.findById(userId);
+
+  if (avatar && user) {
+    if (user?.avatar?.public_id) {
+      await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+      const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+        folder: "avatars",
+        width: 150,
+      });
+      user.avatar = {
+        public_id: myCloud.public_id,
+        url: myCloud.url,
+      };
+    } else {
+      const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+        folder: "avatars",
+        width: 150,
+      });
+      user.avatar = {
+        public_id: myCloud.public_id,
+        url: myCloud.url,
+      };
+    }
+  }
+  await user?.save();
+  await redis.set(userId, JSON.stringify(user));
+  res.status(200).json({
+    success: true,
+    user,
+  });
+};
 export const UserService = {
   registrationUser,
   createActivationToken,
@@ -175,4 +278,8 @@ export const UserService = {
   logoutUser,
   updateAccessToken,
   getUserById,
+  socialAuth,
+  updateUserInfo,
+  updateUserPassword,
+  updateProfilePicture,
 };

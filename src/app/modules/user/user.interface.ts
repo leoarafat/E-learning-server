@@ -52,3 +52,19 @@ export interface ITokenOptions {
   sameSite: "lax" | "strict" | "none" | undefined;
   secure?: boolean;
 }
+export interface ISocialAuth {
+  name: string;
+  email: string;
+  avatar: string;
+}
+export interface IUpdateUserInfo {
+  name?: string;
+  email?: string;
+}
+export interface IUpdateUserPassword {
+  oldPassword: string;
+  newPassword: string;
+}
+export interface IProfilePicture {
+  avatar: string;
+}
