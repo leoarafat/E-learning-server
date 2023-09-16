@@ -99,10 +99,37 @@ const getCourseByUser: RequestHandler = catchAsync(
     });
   }
 );
+
+//add question
+const addQuestion: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await CourseService.addQuestion(req);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: `Question added successfully`,
+      data: result,
+    });
+  }
+);
+//add answer in course question
+const addQuestionAnswer: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await CourseService.addQuestionAnswer(req);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: `Question answer successfully`,
+      data: result,
+    });
+  }
+);
 export const CourseController = {
   uploadCourse,
   editCourse,
   getSingleCourse,
   getAllCourse,
   getCourseByUser,
+  addQuestion,
+  addQuestionAnswer,
 };

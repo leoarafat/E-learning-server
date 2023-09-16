@@ -51,8 +51,8 @@ const registrationUser = async (payload: IRegistration) => {
       template: "activation-mail.ejs",
       data,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    throw new ApiError(500, `${error.message}`);
   }
   return {
     activationToken: activationToken.token,

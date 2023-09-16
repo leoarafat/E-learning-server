@@ -1,9 +1,10 @@
 import { Document } from "mongoose";
+import { IUser } from "../user/user.interface";
 
 export interface IComment extends Document {
-  user: object;
-  comment: string;
-  commentReplies: IComment[];
+  user: IUser;
+  question: string;
+  questionReplies: IComment[];
 }
 export interface IReview extends Document {
   user: object;
@@ -42,4 +43,16 @@ export interface ICourse extends Document {
   courseData: ICourseData[];
   ratings?: number;
   purchased?: number;
+}
+
+export interface IAddQuestionData {
+  question: string;
+  courseId: string;
+  contentId: string;
+}
+export interface IAddAnswerData {
+  answer: string;
+  courseId: string;
+  contentId: string;
+  questionId: string;
 }

@@ -25,4 +25,10 @@ router.get(
   isAuthenticated(),
   CourseController.getCourseByUser
 );
+router.put("/add-question", isAuthenticated(), CourseController.addQuestion);
+router.put(
+  "/add-answer",
+  isAuthenticated(),
+  CourseController.addQuestionAnswer
+);
 export const CourseRoutes = router;
