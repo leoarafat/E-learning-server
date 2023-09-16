@@ -31,4 +31,9 @@ router.put(
   isAuthenticated(),
   CourseController.addQuestionAnswer
 );
+router.put(
+  "/add-review/:id",
+  isAuthenticated(),
+  CourseController.addReviewInCourse
+);
 export const CourseRoutes = router;

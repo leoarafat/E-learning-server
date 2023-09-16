@@ -124,6 +124,31 @@ const addQuestionAnswer: RequestHandler = catchAsync(
     });
   }
 );
+//add review in course
+const addReviewInCourse: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await CourseService.addReviewInCourse(req);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: `Review added successfully`,
+      data: result,
+    });
+  }
+);
+
+//add reply in review
+const addReplyToReview: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await CourseService.addReplyToReview(req);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: `Review reply added successfully`,
+      data: result,
+    });
+  }
+);
 export const CourseController = {
   uploadCourse,
   editCourse,
@@ -132,4 +157,5 @@ export const CourseController = {
   getCourseByUser,
   addQuestion,
   addQuestionAnswer,
+  addReviewInCourse,
 };

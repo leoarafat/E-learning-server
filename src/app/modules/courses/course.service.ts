@@ -2,7 +2,12 @@ import { Request } from "express";
 import { redis } from "../../../utils/redis";
 import { Course } from "./courses.model";
 import ApiError from "../../../errors/ApiError";
-import { IAddAnswerData, IAddQuestionData } from "./courses.interface";
+import {
+  IAddAnswerData,
+  IAddQuestionData,
+  IAddReviewData,
+  IReview,
+} from "./courses.interface";
 import mongoose from "mongoose";
 import ejs from "ejs";
 import path from "path";
@@ -128,10 +133,47 @@ const addQuestionAnswer = async (req: Request) => {
   }
   return course;
 };
+//add review in course
+const addReviewInCourse = async (req: Request) => {
+  const { rating, review }: IAddReviewData = req.body;
+  const userCourseList = req.user?.courses;
+  const courseId = req.params.id;
+  //check exist course
+  const courseExist = userCourseList?.some(
+    (course: any) => course._id.toString() === courseId.toString()
+  );
+  if (!courseExist) {
+    throw new ApiError(400, "You are not eligible to access this course");
+  }
+  const course = await Course.findById(courseId);
+  const reviewData: any = {
+    user: req.user,
+    rating,
+    comment: review,
+  };
+  const reviews: IReview[] = (course?.reviews || []) as IReview[];
+  reviews.push(reviewData);
+  let avg = 0;
+  reviews.forEach((rev: any) => {
+    avg += rev.rating;
+  });
+  if (course) {
+    course.ratings = avg / reviews.length;
+  }
+  await course?.save();
+  const notification = {
+    title: "New review received",
+    message: `${req.user?.name} has given a review in ${course?.name}`,
+  };
+  return course;
+};
+const addReplyToReview = async (req: Request) => {};
 export const CourseService = {
   getSingleCourse,
   getAllCourse,
   getCourseByUser,
   addQuestion,
   addQuestionAnswer,
+  addReviewInCourse,
+  addReplyToReview,
 };

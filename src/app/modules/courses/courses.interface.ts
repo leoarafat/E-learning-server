@@ -7,10 +7,10 @@ export interface IComment extends Document {
   questionReplies: IComment[];
 }
 export interface IReview extends Document {
-  user: object;
+  user: IUser;
   rating: number;
   comment: string;
-  commentReplies: string;
+  commentReplies?: IComment[];
 }
 export interface ILink extends Document {
   title: string;
@@ -55,4 +55,10 @@ export interface IAddAnswerData {
   courseId: string;
   contentId: string;
   questionId: string;
+}
+export interface IAddReviewData {
+  review: string;
+  courseId: string;
+  rating: string;
+  userId: string;
 }
