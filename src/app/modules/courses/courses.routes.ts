@@ -11,6 +11,7 @@ router.post(
   authorizedRoles("admin"),
   CourseController.uploadCourse
 );
+router.get("/get-courses", CourseController.getAllCourse);
 router.put(
   "/edit-course/:id",
   isAuthenticated(),
@@ -18,4 +19,10 @@ router.put(
   CourseController.editCourse
 );
 
+router.get("/get-course/:id", CourseController.getSingleCourse);
+router.get(
+  "/get-course-content/:id",
+  isAuthenticated(),
+  CourseController.getCourseByUser
+);
 export const CourseRoutes = router;

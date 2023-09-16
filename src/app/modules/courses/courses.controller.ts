@@ -3,6 +3,7 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import cloudinary from "cloudinary";
 import { Course } from "./courses.model";
+import { CourseService } from "./course.service";
 
 //Upload course
 const uploadCourse: RequestHandler = catchAsync(
@@ -61,16 +62,40 @@ const editCourse: RequestHandler = catchAsync(
   }
 );
 
-//get single course
+//get single course without purchase
 const getSingleCourse: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const data = req.body;
-
+    const { id } = req.params;
+    const result = await CourseService.getSingleCourse(id);
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: `Course created successfully`,
-      data: {},
+      message: `Course retrieved successfully`,
+      data: result,
+    });
+  }
+);
+//get all course without purchase
+const getAllCourse: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await CourseService.getAllCourse();
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: `Course retrieved successfully`,
+      data: result,
+    });
+  }
+);
+//get all course only for valid user
+const getCourseByUser: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await CourseService.getCourseByUser(req);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: `Course retrieved successfully`,
+      data: result,
     });
   }
 );
@@ -78,4 +103,6 @@ export const CourseController = {
   uploadCourse,
   editCourse,
   getSingleCourse,
+  getAllCourse,
+  getCourseByUser,
 };
