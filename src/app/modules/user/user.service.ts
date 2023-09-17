@@ -289,7 +289,7 @@ const deleteUser = async (req: Request) => {
   if (!result) {
     throw new ApiError(404, "User not found");
   }
-  await User.deleteOne({ id });
+  await result.deleteOne({ id });
   await redis.del(id);
 };
 

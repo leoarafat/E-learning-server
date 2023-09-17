@@ -217,7 +217,7 @@ const deleteCourse = async (req: Request) => {
   if (!result) {
     throw new ApiError(404, "Course not found");
   }
-  await Course.deleteOne({ id });
+  await result.deleteOne({ id });
   await redis.del(id);
 };
 export const CourseService = {
