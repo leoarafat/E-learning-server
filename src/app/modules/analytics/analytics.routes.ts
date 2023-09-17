@@ -17,5 +17,11 @@ router.get(
   authorizedRoles("admin"),
   AnalyticsController.getCourseAnalytics
 );
+router.get(
+  "/get-orders-analytics",
+  isAuthenticated(),
+  authorizedRoles("admin"),
+  AnalyticsController.getOrdersAnalytics
+);
 
 export const AnalyticsRoutes = router;

@@ -29,5 +29,22 @@ const getCourseAnalytics: RequestHandler = catchAsync(
     });
   }
 );
+//get orders analytics only for admin
+const getOrdersAnalytics: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await AnalyticsService.getOrdersAnalytics(req);
 
-export const AnalyticsController = { getUsersAnalytics, getCourseAnalytics };
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Retrieved orders analytics",
+      data: result,
+    });
+  }
+);
+
+export const AnalyticsController = {
+  getUsersAnalytics,
+  getCourseAnalytics,
+  getOrdersAnalytics,
+};
