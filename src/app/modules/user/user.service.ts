@@ -140,7 +140,7 @@ const updateAccessToken = async (req: Request, res: Response) => {
   }
   const session = await redis.get(decoded.id as string);
   if (!session) {
-    throw new ApiError(400, message);
+    throw new ApiError(400, "Please login to access this resource");
   }
   const user = JSON.parse(session);
   const accessToken = jwt.sign(
@@ -160,6 +160,7 @@ const updateAccessToken = async (req: Request, res: Response) => {
   req.user = user;
   res.cookie("access_token", accessToken, accessTokenOptions);
   res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+  await redis.set(user._id, JSON.stringify(user), "EX", 604800);
   res.status(200).json({
     status: "success",
     accessToken,

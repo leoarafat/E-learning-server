@@ -24,7 +24,7 @@ export const isAuthenticated =
       }
       const user = await redis.get(decoded?.id);
       if (!user) {
-        throw next(new ApiError(404, "User not found"));
+        throw next(new ApiError(404, "Please login to access this resource"));
         // return next(new Error("User not found"));
       }
       req.user = JSON.parse(user);
