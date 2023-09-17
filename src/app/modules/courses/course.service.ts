@@ -6,6 +6,7 @@ import {
   IAddAnswerData,
   IAddQuestionData,
   IAddReviewData,
+  IAddReviewReplyData,
   IReview,
 } from "./courses.interface";
 import mongoose from "mongoose";
@@ -167,7 +168,31 @@ const addReviewInCourse = async (req: Request) => {
   };
   return course;
 };
-const addReplyToReview = async (req: Request) => {};
+const addReplyToReview = async (req: Request) => {
+  const { comment, courseId, reviewId } = req.body as IAddReviewReplyData;
+  const course = await Course.findById(courseId);
+  const reviews: IReview[] = (course?.reviews || []) as IReview[];
+  if (!course) {
+    throw new ApiError(404, "Course not found");
+  }
+
+  const review = reviews?.find(
+    (rev: IReview) => rev._id.toString() === reviewId
+  );
+  if (!review) {
+    throw new ApiError(404, "Review not found");
+  }
+  const replyData: any = {
+    user: req.user,
+    comment,
+  };
+  if (!review.commentReplies) {
+    review.commentReplies = [];
+  }
+  review.commentReplies?.push(replyData);
+  await course?.save();
+  return course;
+};
 export const CourseService = {
   getSingleCourse,
   getAllCourse,

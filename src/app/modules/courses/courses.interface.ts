@@ -62,3 +62,8 @@ export interface IAddReviewData {
   rating: string;
   userId: string;
 }
+export interface IAddReviewReplyData {
+  comment: string;
+  courseId: string;
+  reviewId: string;
+}

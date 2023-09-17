@@ -36,4 +36,10 @@ router.put(
   isAuthenticated(),
   CourseController.addReviewInCourse
 );
+router.put(
+  "/add-reply",
+  isAuthenticated(),
+  authorizedRoles("admin"),
+  CourseController.addReplyToReview
+);
 export const CourseRoutes = router;

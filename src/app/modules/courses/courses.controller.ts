@@ -158,4 +158,5 @@ export const CourseController = {
   addQuestion,
   addQuestionAnswer,
   addReviewInCourse,
+  addReplyToReview,
 };
