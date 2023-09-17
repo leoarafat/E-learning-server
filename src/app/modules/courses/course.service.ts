@@ -13,6 +13,7 @@ import mongoose from "mongoose";
 import ejs from "ejs";
 import path from "path";
 import sendEmail from "../../../utils/sendMail";
+import Notification from "../notifications/notifications.model";
 const getSingleCourse = async (id: string) => {
   const isExistCourse = await redis.get(id);
 
@@ -82,6 +83,11 @@ const addQuestion = async (req: Request) => {
   };
 
   courseContent.questions.push(newQuestion);
+  await Notification.create({
+    user: req.user?._id,
+    title: "New Question Received",
+    message: `You have a new question in ${courseContent.title}`,
+  });
   await course?.save();
   return course;
 };
@@ -112,6 +118,11 @@ const addQuestionAnswer = async (req: Request) => {
   await course?.save();
   if (req.user?._id === question.user?._id) {
     //create notification
+    await Notification.create({
+      user: req.user?._id,
+      title: "New Question Reply Received",
+      message: `You have a new question in ${courseContent.title}`,
+    });
   } else {
     const data = {
       name: question.user.name,
@@ -193,6 +204,22 @@ const addReplyToReview = async (req: Request) => {
   await course?.save();
   return course;
 };
+
+//Get all Courses
+const getAllCourses = async () => {
+  const courses = await Course.find().sort({ createdAt: -1 });
+  return courses;
+};
+//delete course  only for admin
+const deleteCourse = async (req: Request) => {
+  const { id } = req.params;
+  const result = await Course.findById(id);
+  if (!result) {
+    throw new ApiError(404, "Course not found");
+  }
+  await Course.deleteOne({ id });
+  await redis.del(id);
+};
 export const CourseService = {
   getSingleCourse,
   getAllCourse,
@@ -201,4 +228,6 @@ export const CourseService = {
   addQuestionAnswer,
   addReviewInCourse,
   addReplyToReview,
+  getAllCourses,
+  deleteCourse,
 };

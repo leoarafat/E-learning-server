@@ -76,6 +76,12 @@ const createOrder = async (req: Request) => {
   return { order: course };
 };
 
+//Get all Orders
+const getAllOrders = async () => {
+  const orders = await Order.find().sort({ createdAt: -1 });
+  return orders;
+};
 export const OrderService = {
   createOrder,
+  getAllOrders,
 };

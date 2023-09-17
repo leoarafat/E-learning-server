@@ -23,6 +23,18 @@ router.put(
   isAuthenticated(),
   UserController.updateProfilePicture
 );
+router.put(
+  "/update-user",
+  isAuthenticated(),
+  authorizedRoles("admin"),
+  UserController.updateUserRole
+);
+router.delete(
+  "/delete-user/:id",
+  isAuthenticated(),
+  authorizedRoles("admin"),
+  UserController.deleteUser
+);
 router.get(
   "/logout",
   isAuthenticated(),
@@ -31,4 +43,10 @@ router.get(
 );
 router.get("/refresh-token", UserController.updateAccessToken);
 router.get("/me", isAuthenticated(), UserController.getUserById);
+router.get(
+  "/get-users",
+  isAuthenticated(),
+  authorizedRoles("admin"),
+  UserController.getAllUsers
+);
 export const UserRoutes = router;

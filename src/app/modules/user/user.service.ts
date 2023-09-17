@@ -166,7 +166,7 @@ const updateAccessToken = async (req: Request, res: Response) => {
   });
 };
 
-//Get user
+//Get user by id
 const getUserById = async (req: Request, res: Response) => {
   const userId = req.user?._id;
   const result = await redis.get(userId);
@@ -270,6 +270,29 @@ const updateProfilePicture = async (req: Request, res: Response) => {
     user,
   });
 };
+
+//Get all user
+const getAllUsers = async () => {
+  const users = await User.find().sort({ createdAt: -1 });
+  return users;
+};
+//Update user role only for admin
+const updateUserRole = async (req: Request) => {
+  const { id, role } = req.body;
+  const result = await User.findByIdAndUpdate(id, { role }, { new: true });
+  return result;
+};
+//delete user role only for admin
+const deleteUser = async (req: Request) => {
+  const { id } = req.params;
+  const result = await User.findById(id);
+  if (!result) {
+    throw new ApiError(404, "User not found");
+  }
+  await User.deleteOne({ id });
+  await redis.del(id);
+};
+
 export const UserService = {
   registrationUser,
   createActivationToken,
@@ -282,4 +305,7 @@ export const UserService = {
   updateUserInfo,
   updateUserPassword,
   updateProfilePicture,
+  getAllUsers,
+  updateUserRole,
+  deleteUser,
 };

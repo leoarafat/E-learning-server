@@ -11,7 +11,15 @@ router.post(
   authorizedRoles("admin"),
   CourseController.uploadCourse
 );
+//get all course without purchases
 router.get("/get-courses", CourseController.getAllCourse);
+//get All courses for admin
+router.get(
+  "/",
+  isAuthenticated(),
+  authorizedRoles("admin"),
+  CourseController.getAllCourses
+);
 router.put(
   "/edit-course/:id",
   isAuthenticated(),
@@ -24,6 +32,12 @@ router.get(
   "/get-course-content/:id",
   isAuthenticated(),
   CourseController.getCourseByUser
+);
+router.delete(
+  "/delete-course/:id",
+  isAuthenticated(),
+  authorizedRoles("admin"),
+  CourseController.deleteCourse
 );
 router.put("/add-question", isAuthenticated(), CourseController.addQuestion);
 router.put(

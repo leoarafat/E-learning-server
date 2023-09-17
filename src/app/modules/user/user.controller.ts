@@ -72,6 +72,45 @@ const updateProfilePicture: RequestHandler = catchAsync(
     await UserService.updateProfilePicture(req, res);
   }
 );
+
+//Get all user
+const getAllUsers: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await UserService.getAllUsers();
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "User retrieved successful",
+      data: result,
+    });
+  }
+);
+//Update user role only for admin
+const updateUserRole: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await UserService.updateUserRole(req);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "User role updated successful",
+      data: result,
+    });
+  }
+);
+//Delete user only for admin
+const deleteUser: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    await UserService.deleteUser(req);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "User deleted successful",
+    });
+  }
+);
 export const UserController = {
   registrationUser,
   activateUser,
@@ -83,4 +122,7 @@ export const UserController = {
   updateUserInfo,
   updateUserPassword,
   updateProfilePicture,
+  getAllUsers,
+  updateUserRole,
+  deleteUser,
 };

@@ -149,6 +149,31 @@ const addReplyToReview: RequestHandler = catchAsync(
     });
   }
 );
+//Get all courses
+const getAllCourses: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await CourseService.getAllCourses();
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Course retrieved successful",
+      data: result,
+    });
+  }
+);
+//Delete Course only for admin
+const deleteCourse: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    await CourseService.deleteCourse(req);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Course deleted successful",
+    });
+  }
+);
 export const CourseController = {
   uploadCourse,
   editCourse,
@@ -159,4 +184,6 @@ export const CourseController = {
   addQuestionAnswer,
   addReviewInCourse,
   addReplyToReview,
+  getAllCourses,
+  deleteCourse,
 };
