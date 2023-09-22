@@ -193,16 +193,10 @@ const socialAuth = async (req: Request, res: Response) => {
 };
 
 const updateUserInfo = async (req: Request, res: Response) => {
-  const { name, email } = req.body as IUpdateUserInfo;
+  const { name } = req.body as IUpdateUserInfo;
   const userId = req.user?._id;
   const user = await User.findById(userId);
-  if (email && user) {
-    const isEmailExist = await User.findOne({ email });
-    if (isEmailExist) {
-      throw new ApiError(404, "Email already exist");
-    }
-    user.email = email;
-  }
+
   if (name && user) {
     user.name = name;
   }

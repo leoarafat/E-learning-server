@@ -16,6 +16,7 @@ export default {
   cloud_api_secret: process.env.CLOUD_API_SECRET,
   redis_expires_in: process.env.REDIS_TOKEN_EXPIRES_IN,
   activation_secret: process.env.ACTIVATION_SECRET,
+  video_cipher_api_key: process.env.VIDEO_CIPHER_API_SECRET,
   jwt: {
     access_token: process.env.ACCESS_TOKEN,
     refresh_token: process.env.REFRESH_TOKEN,

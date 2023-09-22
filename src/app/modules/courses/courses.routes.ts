@@ -50,6 +50,11 @@ router.put(
   isAuthenticated(),
   CourseController.addReviewInCourse
 );
+router.post(
+  "/getVdoCipherOTP",
+
+  CourseController.generateVideoUrl
+);
 router.put(
   "/add-reply",
   isAuthenticated(),

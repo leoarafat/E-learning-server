@@ -4,7 +4,8 @@ import sendResponse from "../../../shared/sendResponse";
 import cloudinary from "cloudinary";
 import { Course } from "./courses.model";
 import { CourseService } from "./course.service";
-
+import axios from "axios";
+import config from "../../../config";
 //Upload course
 const uploadCourse: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
@@ -174,6 +175,32 @@ const deleteCourse: RequestHandler = catchAsync(
     });
   }
 );
+const generateVideoUrl: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { videoId } = req.body;
+
+    const response = await axios.post(
+      `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
+      {
+        ttl: 300,
+      },
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Apisecret ${config.video_cipher_api_key}`,
+        },
+      }
+    );
+    console.log(response.data);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      data: response.data,
+    });
+  }
+);
+
 export const CourseController = {
   uploadCourse,
   editCourse,
@@ -186,4 +213,5 @@ export const CourseController = {
   addReplyToReview,
   getAllCourses,
   deleteCourse,
+  generateVideoUrl,
 };

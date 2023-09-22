@@ -9,7 +9,8 @@ export const app: Application = express();
 //cors
 app.use(
   cors({
-    origin: config.origin_url,
+    origin: ["http://localhost:3000"],
+    credentials: true,
   })
 );
 //cookie
