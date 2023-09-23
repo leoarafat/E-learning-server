@@ -1,4 +1,4 @@
-import { Request, RequestHandler, Response } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import sendResponse from "../../../shared/sendResponse";
 import catchAsync from "../../../shared/catchAsync";
 import { UserService } from "./user.service";
@@ -38,8 +38,8 @@ const logoutUser: RequestHandler = catchAsync(
   }
 );
 const updateAccessToken: RequestHandler = catchAsync(
-  async (req: Request, res: Response) => {
-    await UserService.updateAccessToken(req, res);
+  async (req: Request, res: Response, next: NextFunction) => {
+    await UserService.updateAccessToken(req, res, next);
   }
 );
 const getUserById: RequestHandler = catchAsync(

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import config from "../../../config";
 import ApiError from "../../../errors/ApiError";
 import {
@@ -127,7 +127,11 @@ const logoutUser = async (req: Request, res: Response) => {
   });
 };
 
-const updateAccessToken = async (req: Request, res: Response) => {
+const updateAccessToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const refresh_token = req.cookies.refresh_token as string;
   const decoded = jwt.verify(
     refresh_token,
@@ -161,10 +165,7 @@ const updateAccessToken = async (req: Request, res: Response) => {
   res.cookie("access_token", accessToken, accessTokenOptions);
   res.cookie("refresh_token", refreshToken, refreshTokenOptions);
   await redis.set(user._id, JSON.stringify(user), "EX", 604800);
-  res.status(200).json({
-    status: "success",
-    accessToken,
-  });
+  next();
 };
 
 //Get user by id
