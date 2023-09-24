@@ -34,7 +34,13 @@ const editCourse: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const data = req.body;
     const thumbnail = data.thumbnail;
-    if (thumbnail) {
+    const courseId = req.params.id;
+    console.log(courseId);
+    const courseData = (await Course.findById(courseId)) as any;
+    console.log(courseData, "Course data");
+    if (thumbnail && !thumbnail.startsWith("https")) {
+      await cloudinary.v2.uploader.destroy(courseData.thumbnail.public_url);
+
       const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
         folder: "Courses",
       });
@@ -42,9 +48,14 @@ const editCourse: RequestHandler = catchAsync(
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
       };
+      if (thumbnail.startsWith("https")) {
+        data.thumbnail = {
+          public_id: courseData?.thumbnail.public_id,
+          url: courseData?.thumbnail.url,
+        };
+      }
     }
 
-    const courseId = req.params.id;
     const course = await Course.findByIdAndUpdate(
       courseId,
       {

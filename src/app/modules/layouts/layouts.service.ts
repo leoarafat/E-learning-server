@@ -15,12 +15,16 @@ const createLayout = async (req: Request) => {
       folder: "layout",
     });
     const banner = {
-      image: {
-        public_id: myCloud.public_id,
-        url: myCloud.url,
+      type: "Banner",
+
+      banner: {
+        image: {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        },
+        title,
+        subTitle,
       },
-      title,
-      subTitle,
     };
     await Layout.create(banner);
   }
@@ -55,17 +59,24 @@ const updateLayout = async (req: Request) => {
   if (type === "Banner") {
     const bannerData: any = await Layout.findOne({ type: "Banner" });
     const { image, title, subTitle } = req.body;
-    if (bannerData) {
-      await cloudinary.v2.uploader.destroy(bannerData.image.public_id);
-    }
-    const myCloud = await cloudinary.v2.uploader.upload(image, {
-      folder: "layout",
-    });
+    const data = image.startsWith("https")
+      ? bannerData
+      : await cloudinary.v2.uploader.upload(image, {
+          folder: "layout",
+        });
+
+    // const myCloud = await cloudinary.v2.uploader.upload(image, {
+    //   folder: "layout",
+    // });
     const banner = {
       type: "Banner",
       image: {
-        public_id: myCloud.public_id,
-        url: myCloud.url,
+        public_id: image.startsWith("https")
+          ? bannerData.banner.image.public_id
+          : data?.public_id,
+        url: image.startsWith("https")
+          ? bannerData.banner.image.url
+          : data?.secure_url,
       },
       title,
       subTitle,
@@ -108,7 +119,7 @@ const updateLayout = async (req: Request) => {
 };
 
 const getLayoutByType = async (req: Request) => {
-  const { type } = req.body;
+  const { type } = req.params;
   const layout = await Layout.findOne({ type });
   return layout;
 };

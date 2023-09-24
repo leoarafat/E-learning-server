@@ -32,19 +32,11 @@ const getSingleCourse = async (id: string) => {
   }
 };
 const getAllCourse = async () => {
-  const isChaseExist = await redis.get("allCourses");
-  if (isChaseExist) {
-    const courses = JSON.parse(isChaseExist);
+  const result = await Course.find().select(
+    "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+  );
 
-    return courses;
-  } else {
-    const result = await Course.find().select(
-      "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
-    );
-
-    await redis.set("allCourses", JSON.stringify(result));
-    return result;
-  }
+  return result;
 };
 
 const getCourseByUser = async (req: Request) => {
