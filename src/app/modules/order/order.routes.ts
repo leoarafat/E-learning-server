@@ -14,5 +14,10 @@ router.get(
   authorizedRoles("admin"),
   OrderController.getAllOrders
 );
+router.get(
+  "/payment/stripepublishablekey",
+  OrderController.sendStripePublishableKey
+);
+router.post("/payment", isAuthenticated(), OrderController.newPayment);
 
 export const OrderRoutes = router;

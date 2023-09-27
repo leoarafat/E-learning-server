@@ -35,9 +35,9 @@ const editCourse: RequestHandler = catchAsync(
     const data = req.body;
     const thumbnail = data.thumbnail;
     const courseId = req.params.id;
-    console.log(courseId);
+
     const courseData = (await Course.findById(courseId)) as any;
-    console.log(courseData, "Course data");
+
     if (thumbnail && !thumbnail.startsWith("https")) {
       await cloudinary.v2.uploader.destroy(courseData.thumbnail.public_url);
 

@@ -8,9 +8,27 @@ import { Course } from "../courses/courses.model";
 import Order from "./order.model";
 import sendEmail from "../../../utils/sendMail";
 import Notification from "../notifications/notifications.model";
+import { redis } from "../../../utils/redis";
+import config from "../../../config";
+const stripe = require("stripe")(config.stripe_secret_key);
+
 //create order with send email notification
 const createOrder = async (req: Request) => {
   const { courseId, payment_info } = req.body as IOrder;
+
+  if (payment_info) {
+    if ("id" in payment_info) {
+      const paymentIntentId = payment_info.id;
+
+      const paymentIntent = await stripe.paymentIntents.retrieve(
+        paymentIntentId
+      );
+      if (paymentIntent.status !== "succeeded") {
+        throw new ApiError(400, "Payment not authorized!");
+      }
+    }
+  }
+
   const user = await User.findById(req.user?._id);
   const courseExistInUser = user?.courses.some(
     (course: any) => course._id.toString() === courseId
@@ -57,6 +75,7 @@ const createOrder = async (req: Request) => {
     throw new ApiError(400, `${error.message}`);
   }
   user?.courses.push(course?._id);
+  await redis.set(req.user?._id, JSON.stringify(user));
   await user?.save();
 
   await Notification.create({
