@@ -33,6 +33,11 @@ const reviewSchema = new mongoose_1.Schema({
     },
     comment: String,
     commentReplies: [Object],
+}, {
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+    },
 });
 const linkSchema = new mongoose_1.Schema({
     title: String,
@@ -42,6 +47,11 @@ const commentSchema = new mongoose_1.Schema({
     user: Object,
     question: String,
     questionReplies: [Object],
+}, {
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+    },
 });
 const courseDataSchema = new mongoose_1.Schema({
     title: String,
@@ -60,6 +70,10 @@ const courseSchema = new mongoose_1.Schema({
         required: true,
     },
     description: {
+        type: String,
+        required: true,
+    },
+    categories: {
         type: String,
         required: true,
     },

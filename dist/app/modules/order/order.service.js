@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -21,22 +12,33 @@ const courses_model_1 = require("../courses/courses.model");
 const order_model_1 = __importDefault(require("./order.model"));
 const sendMail_1 = __importDefault(require("../../../utils/sendMail"));
 const notifications_model_1 = __importDefault(require("../notifications/notifications.model"));
+const redis_1 = require("../../../utils/redis");
+const config_1 = __importDefault(require("../../../config"));
+const stripe = require("stripe")(config_1.default.stripe_secret_key);
 //create order with send email notification
-const createOrder = (req) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const createOrder = async (req) => {
     const { courseId, payment_info } = req.body;
-    const user = yield user_model_1.default.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id);
-    const courseExistInUser = user === null || user === void 0 ? void 0 : user.courses.some((course) => course._id.toString() === courseId);
+    if (payment_info) {
+        if ("id" in payment_info) {
+            const paymentIntentId = payment_info.id;
+            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+            if (paymentIntent.status !== "succeeded") {
+                throw new ApiError_1.default(400, "Payment not authorized!");
+            }
+        }
+    }
+    const user = await user_model_1.default.findById(req.user?._id);
+    const courseExistInUser = user?.courses.some((course) => course._id.toString() === courseId);
     if (courseExistInUser) {
         throw new ApiError_1.default(400, "You have already purchased this course");
     }
-    const course = yield courses_model_1.Course.findById(courseId);
+    const course = await courses_model_1.Course.findById(courseId);
     if (!course) {
         throw new ApiError_1.default(404, "Course not found");
     }
     const data = {
         courseId: course._id,
-        userId: user === null || user === void 0 ? void 0 : user._id,
+        userId: user?._id,
     };
     const mailData = {
         order: {
@@ -50,10 +52,10 @@ const createOrder = (req) => __awaiter(void 0, void 0, void 0, function* () {
             }),
         },
     };
-    const html = yield ejs_1.default.renderFile(path_1.default.join(__dirname, "../../../mails/order-confirmation.ejs"), { order: mailData });
+    const html = await ejs_1.default.renderFile(path_1.default.join(__dirname, "../../../mails/order-confirmation.ejs"), { order: mailData });
     try {
         if (user) {
-            yield (0, sendMail_1.default)({
+            await (0, sendMail_1.default)({
                 email: user.email,
                 subject: "Order Confirmation",
                 template: "order-confirmation.ejs",
@@ -64,29 +66,30 @@ const createOrder = (req) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         throw new ApiError_1.default(400, `${error.message}`);
     }
-    user === null || user === void 0 ? void 0 : user.courses.push(course === null || course === void 0 ? void 0 : course._id);
-    yield (user === null || user === void 0 ? void 0 : user.save());
-    yield notifications_model_1.default.create({
-        user: user === null || user === void 0 ? void 0 : user._id,
+    user?.courses.push(course?._id);
+    await redis_1.redis.set(req.user?._id, JSON.stringify(user));
+    await user?.save();
+    await notifications_model_1.default.create({
+        user: user?._id,
         title: "New Order",
-        message: `You have a new order from ${course === null || course === void 0 ? void 0 : course.name}`,
+        message: `You have a new order from ${course?.name}`,
     });
     //   course.purchased ? (course.purchased += 1) : course.purchased;
     //   course.purchased += 1;
     if (course) {
         course.purchased = (course.purchased || 0) + 1;
-        yield course.save();
+        await course.save();
     }
     else {
     }
-    yield order_model_1.default.create(data);
+    await order_model_1.default.create(data);
     return { order: course };
-});
+};
 //Get all Orders
-const getAllOrders = () => __awaiter(void 0, void 0, void 0, function* () {
-    const orders = yield order_model_1.default.find().sort({ createdAt: -1 });
+const getAllOrders = async () => {
+    const orders = await order_model_1.default.find().sort({ createdAt: -1 });
     return orders;
-});
+};
 exports.OrderService = {
     createOrder,
     getAllOrders,

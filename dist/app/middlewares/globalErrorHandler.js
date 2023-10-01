@@ -15,37 +15,37 @@ const globalErrorHandler = (error, req, res, next) => {
     let statusCode = 500;
     let message = "Something went wrong !";
     let errorMessages = [];
-    if ((error === null || error === void 0 ? void 0 : error.name) === "ValidationError") {
+    if (error?.name === "ValidationError") {
         const simplifiedError = (0, handleValidationError_1.default)(error);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
         errorMessages = simplifiedError.errorMessages;
     }
-    else if ((error === null || error === void 0 ? void 0 : error.name) === "CastError") {
+    else if (error?.name === "CastError") {
         const simplifiedError = (0, handleCastError_1.handleCastError)(error);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
         errorMessages = simplifiedError.errorMessages;
     }
     else if (error instanceof ApiError_1.default) {
-        statusCode = error === null || error === void 0 ? void 0 : error.statusCode;
+        statusCode = error?.statusCode;
         message = error.message;
-        errorMessages = (error === null || error === void 0 ? void 0 : error.message)
+        errorMessages = error?.message
             ? [
                 {
                     path: "",
-                    message: error === null || error === void 0 ? void 0 : error.message,
+                    message: error?.message,
                 },
             ]
             : [];
     }
     else if (error instanceof mongoose_1.Error) {
-        message = error === null || error === void 0 ? void 0 : error.message;
-        errorMessages = (error === null || error === void 0 ? void 0 : error.message)
+        message = error?.message;
+        errorMessages = error?.message
             ? [
                 {
                     path: "",
-                    message: error === null || error === void 0 ? void 0 : error.message,
+                    message: error?.message,
                 },
             ]
             : [];
@@ -54,7 +54,7 @@ const globalErrorHandler = (error, req, res, next) => {
         success: false,
         message,
         errorMessages,
-        stack: config_1.default.env !== "production" ? error === null || error === void 0 ? void 0 : error.stack : undefined,
+        stack: config_1.default.env !== "production" ? error?.stack : undefined,
     });
 };
 exports.default = globalErrorHandler;
