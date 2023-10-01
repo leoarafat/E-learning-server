@@ -45,6 +45,7 @@ const updateAccessToken: RequestHandler = catchAsync(
 const getUserById: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const result = await UserService.getUserById(req, res);
+
     sendResponse(res, {
       statusCode: 200,
       success: true,

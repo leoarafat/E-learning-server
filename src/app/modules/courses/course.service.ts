@@ -41,13 +41,13 @@ const getAllCourse = async () => {
 
 const getCourseByUser = async (req: Request) => {
   const { id } = req.params;
-
+  // console.log(id );
   const userCourseList = req.user?.courses;
 
   const courseExists = userCourseList?.find(
     (course: any) => course._id === String(id)
   );
-
+  // console.log(courseExists);
   if (!courseExists) {
     throw new ApiError(404, "You are not eligible to access this course");
   }
@@ -106,6 +106,8 @@ const addQuestionAnswer = async (req: Request) => {
   const newAnswer: any = {
     user: req?.user,
     answer,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
   question.questionReplies.push(newAnswer);
   await course?.save();
@@ -166,6 +168,7 @@ const addReviewInCourse = async (req: Request) => {
     course.ratings = avg / reviews.length;
   }
   await course?.save();
+  await redis.set(courseId, JSON.stringify(course), "EX", 604800);
   const notification = {
     title: "New review received",
     message: `${req.user?.name} has given a review in ${course?.name}`,
@@ -189,6 +192,8 @@ const addReplyToReview = async (req: Request) => {
   const replyData: any = {
     user: req.user,
     comment,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
   if (!review.commentReplies) {
     review.commentReplies = [];

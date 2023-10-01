@@ -7,24 +7,40 @@ import {
   IReview,
 } from "./courses.interface";
 
-const reviewSchema = new Schema<IReview>({
-  user: Object,
-  rating: {
-    type: Number,
-    default: 0,
+const reviewSchema = new Schema<IReview>(
+  {
+    user: Object,
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    comment: String,
+    commentReplies: [Object],
   },
-  comment: String,
-  commentReplies: [Object],
-});
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
+  }
+);
 const linkSchema = new Schema<ILink>({
   title: String,
   url: String,
 });
-const commentSchema = new Schema<IComment>({
-  user: Object,
-  question: String,
-  questionReplies: [Object],
-});
+const commentSchema = new Schema<IComment>(
+  {
+    user: Object,
+    question: String,
+    questionReplies: [Object],
+  },
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
+  }
+);
 const courseDataSchema = new Schema<ICourseData>({
   title: String,
   description: String,

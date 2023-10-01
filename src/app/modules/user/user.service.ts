@@ -171,9 +171,11 @@ const updateAccessToken = async (
 //Get user by id
 const getUserById = async (req: Request, res: Response) => {
   const userId = req.user?._id;
+
   const result = await redis.get(userId);
   if (result) {
     const user = JSON.parse(result);
+
     return user;
   }
 };
