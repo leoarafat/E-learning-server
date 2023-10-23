@@ -24,6 +24,7 @@ import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import path from "path";
 import { redis } from "../../../utils/redis";
 import cloudinary from "cloudinary";
+
 const registrationUser = async (payload: IRegistration) => {
   const { name, email, password } = payload;
   const user = {

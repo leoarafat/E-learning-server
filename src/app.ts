@@ -9,7 +9,8 @@ export const app: Application = express();
 //cors
 app.use(
   cors({
-    origin: ["study-sync-eta.vercel.app"],
+    // origin: ["http://localhost:3000"],
+    origin: ["https://study-sync-eta.vercel.app"],
     credentials: true,
   })
 );

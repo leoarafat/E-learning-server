@@ -14,7 +14,8 @@ const express_rate_limit_1 = require("express-rate-limit");
 exports.app = (0, express_1.default)();
 //cors
 exports.app.use((0, cors_1.default)({
-    origin: ["study-sync-eta.vercel.app"],
+    // origin: ["http://localhost:3000"],
+    origin: ["https://study-sync-eta.vercel.app"],
     credentials: true,
 }));
 //cookie
